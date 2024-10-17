@@ -1,62 +1,68 @@
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.Color;//biblioteka odpowiedzialna za ustawienie koloru tła pola tekstowego
+import java.awt.GridLayout;//wstawianie siatki rozmieszczającej przyciski
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Random;
+import java.awt.event.ActionListener;//"wysłuchiwanie" stanu przycisku - wciśnięty lub nie
+import java.util.Random;//generowanie liczb pseudolosowych
+import java.util.Scanner; //dodanie klasy Scanner
 
 public class Main {
-    private static int proba = 0;  // Liczba prób
-    private static int diament = 0; // Liczba diamentów
-    private static int bomba = 0;   // Liczba bomb
+    // Zmienna do przechowywania liczby prób, diamentów i bomb
+    private static int proba = 0;
+    private static int diament = 0;
+    private static int bomba = 0;
     private static Random random = new Random(); // Instancja klasy Random
+    private static String imieGracza;
+    private static boolean s = false; //Zmienna pomocnicza do sprawdzania ponownego startu gry
 
     public static void main(String[] args) {
-        // Tworzenie okna w osobnym wątku GUI
-        SwingUtilities.invokeLater(() -> {
-            // Tworzenie okna JFrame
+        // Użycie Scanner do pobrania imienia gracza przed uruchomieniem GUI
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Podaj swoje imię: ");
+        imieGracza = scanner.nextLine(); // Pobranie imienia gracza
+
+
+            //tworzenie okna JFrame
             JFrame frame = new JFrame("Siatka z przyciskami i polem tekstowym");
 
-            // Ustawienie menedżera układu - GridLayout (2x2)
+            //Ustawienie siatki  - GridLayout (2x2)
             frame.setLayout(new GridLayout(2, 2, 10, 10)); // 2 wiersze, 2 kolumny, odstępy 10px
 
-            // Tworzenie przycisków
-            JButton button1 = new JButton("Przycisk 1");
-            JButton button2 = new JButton("Przycisk 2");
+            //tworzenie przycisków
+            JButton b1 = new JButton("Kliknij tutaj");
+            JButton b2 = new JButton("A może tutaj?");
 
-            // Tworzenie etykiety w miejscu trzeciego przycisku
-            JLabel label3 = new JLabel("Etykieta 3", JLabel.CENTER); // Wycentrowana etykieta
+            //tworzenie etykiety w miejscu trzeciego przycisku
+            JLabel label3 = new JLabel("", JLabel.CENTER); // Wycentrowana etykieta
 
-            // Tworzenie pola tekstowego JTextArea w miejscu czwartego przycisku
-            JTextArea textArea4 = new JTextArea("Wpisz tekst tutaj");
-            textArea4.setLineWrap(true); // Automatyczne łamanie linii
-            textArea4.setWrapStyleWord(true); // Łamanie w słowach
-            textArea4.setRows(5); // Ustawienie liczby wierszy
-            textArea4.setColumns(20); // Ustawienie liczby kolumn
+            //tworzenie pola tekstowego JTextArea w miejscu czwartego przycisku
+            JTextArea pole4 = new JTextArea("Witaj w grze " + imieGracza + "!!!");
+            pole4.setRows(5); // Ustawienie liczby wierszy
+            pole4.setColumns(20); // Ustawienie liczby kolumn
 
-            // Zmiana koloru tła JTextArea na białe
-            textArea4.setBackground(Color.WHITE); // Możesz użyć dowolnego koloru
+            //zmiana koloru tła JTextArea na białe
+            pole4.setBackground(Color.WHITE);
 
-            // Dodanie ActionListener do przycisków
+            //dodanie ActionListener do przycisków
             ActionListener buttonListener = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    boolean randomValue = random.nextBoolean(); // Generowanie losowej wartości
-                    // Sprawdzenie, który przycisk został wciśnięty
-                    if (e.getSource() == button1) {
-                        if (randomValue) {
+                    boolean losowawartosc = random.nextBoolean(); //generowanie losowej wartości
+                    //Sprawdzenie który przycisk został wciśnięty
+                    if (e.getSource() == b1) {//e.getSource sprawdza ktory przycisk wywołał zdarzenie
+                        if (losowawartosc) {
                             diament++;
                         } else {
                             bomba++;
                         }
                         proba++;
-                    } else if (e.getSource() == button2) {
-                        if (randomValue) {
+                    } else if (e.getSource() == b2) {
+                        if (losowawartosc) {
                             diament++;
                         } else {
                             bomba++;
@@ -64,43 +70,44 @@ public class Main {
                         proba++;
                     }
 
-                    // Aktualizuj etykietę o wyniki
+                    // Aktualizacja etykiety o wyniki (HTML formatowanie dla nowych linii)
                     label3.setText("<html>Próba: " + proba + "<br>Diamenty: " + diament + "<br>Bomby: " + bomba + "</html>");
 
-                    if (proba >= 20) {
-                        // Wyświetlenie komunikatu w JTextArea
-                        if (diament >= bomba) {
-                            textArea4.setText("Koniec gry!\nWygrałeś!\nDiamenty: " + diament);
-                        } else {
-                            textArea4.setText("Koniec gry!\nNiestety los ci nie sprzyja:(\nBomby: " + bomba);
-                        }
-                        // Resetowanie wartości
-                        diament = 0;
-                        bomba = 0;
-                        proba = 0;
+                    if (proba < 20) {
+                        //jeżeli zmienna s przyjmuje true oznacza to ze uzytkownik gra ponownie
+                        if(s == true){pole4.setText("Witaj ponownie " + imieGracza);}//wyswietlenie komunikatu
                     }
                     else
                     {
-                        textArea4.setText("Powodzenia!!!");
+                        s = true;
+                        if (diament >= bomba) {
+                            pole4.setText("Koniec gry!\nWygrałeś!\nDiamenty: " + diament);
+                        } else {
+                            pole4.setText("Koniec gry!\nNiestety los ci nie sprzyja:(\nBomby: " + bomba);
+                        }
+                        //resetowanie wartości
+                        diament = 0;
+                        bomba = 0;
+                        proba = 0;
                     }
                 }
             };
 
             // Rejestracja ActionListener dla obu przycisków
-            button1.addActionListener(buttonListener);
-            button2.addActionListener(buttonListener);
+            b1.addActionListener(buttonListener);
+            b2.addActionListener(buttonListener);
 
             // Dodawanie elementów do okna
-            frame.add(button1);  // Pole 1 - Przycisk
-            frame.add(button2);  // Pole 2 - Przycisk
+            frame.add(b1);  // Pole 1 - Przycisk
+            frame.add(b2);  // Pole 2 - Przycisk
             frame.add(label3);   // Pole 3 - Etykieta
-            frame.add(textArea4);  // Pole 4 - JTextArea
+            frame.add(pole4);  // Pole 4 - JTextArea
 
             // Ustawienia okna
             frame.setSize(400, 400); // Ustawienie rozmiaru okna
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Zamknięcie aplikacji po kliknięciu "X"
             frame.setLocationRelativeTo(null); // Wycentrowanie okna na ekranie
             frame.setVisible(true); // Pokazanie okna
-        });
+
     }
 }
